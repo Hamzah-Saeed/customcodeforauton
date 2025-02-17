@@ -1,4 +1,5 @@
 import rclpy
+import math
 from rclpy.node import Node
 from rclpy.timer import Timer
 
@@ -46,15 +47,6 @@ class SensorPub(Node):
             Point,
             'rover_pose_msg',
             10)
-
-        timer_period  = 0.010
-        self.create_timer(timer_period, self.timer_callback)
-        
-        self.node_sub = self.create_subscription(
-            Int64,
-            'node_test',
-            self.node_callback,
-            10)
         
         self.gps_publisher = self.create_publisher(
             NavSatFix,
@@ -68,6 +60,28 @@ class SensorPub(Node):
             10 #queue size 
         )
 
+        timer_period  = 0.010
+        self.create_timer(timer_period, self.timer_callback)
+        
+        self.node_sub = self.create_subscription(
+            Int64,
+            'node_test',
+            self.node_callback,
+            10
+        )
+
+        self.zed2inode_sub = self.create_subscription(
+            Imu,
+            '/zed2i/zed_node/imu/data',
+            self.imu_callback,
+            10
+        )
+
+        
+        
+    def imu_callback(self, msg: Imu):
+        self.heading_publisher.publish(msg)
+
 
         
     def timer_callback(self):
@@ -78,8 +92,14 @@ class SensorPub(Node):
 
             lat = data.bestpos_lat
             lon = data.bestpos_lon
-            alt = 0.0 #Not sure if the gps has the  ability to obtain altitude, will have to look into the details of it
-            yaw = data.heading_degree 
+            alt = self.attitude()
+            # yaw = data.heading_degree <---- This is what was used in the old code, im using YPR instead
+
+            yaw, pitch, roll = self.ypr()
+            yaw_rad = math.radians(yaw)
+            pitch_rad = math.radians(pitch)
+            roll_rad = math.radians(roll)
+
 
             #create NavSatFix Message#
             nsm = NavSatFix()
@@ -92,23 +112,6 @@ class SensorPub(Node):
             nsm.status.service = 1 # gps service is being used
 
             self.gps_publisher.publish(nsm)
-
-
-            # Create new IMU message Object for orientation
-            imu = Imu()
-            imu.header.stamp = self.get_clock().now().to_msg()
-            imu.header.frame_id = "heading_frame" 
-
-            # We would probably need to get other orientation values (Roll and Pitch)
-            # Set to zero for now
-            imu.orientation.x = 0.0
-            imu.orientation.y = 0.0
-            imu.orientation.z = float(yaw) # Yaw is on the z-axis
-
-            # Publish these header to /imu/data topic
-            self.heading_publisher.publish(imu)
-
-            print(imu) # Debugging
 
 
             #print(lat, lon, yaw, type(lat), type(lon), type(yaw))

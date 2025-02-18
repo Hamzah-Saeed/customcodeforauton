@@ -112,7 +112,7 @@ class SensorPub(Node):
             #create NavSatFix Message#
             nsm = NavSatFix()
             nsm.header.stamp = self.get_clock().now().to_msg()
-            nsm.header.frame_id = "gps_frame" #arbitrary id, can be changed
+            nsm.header.frame_id = self.base_frame #arbitrary id, can be changed
             nsm.latitude = float(lat)
             nsm.longitude = float(lon)
             nsm.altitude = float(alt)
@@ -134,7 +134,7 @@ class SensorPub(Node):
 
             odom = Odometry()
             odom.header.stamp = self.get_clock().now().to_msg()
-            odom.header.frame_id = "odom_frame"
+            odom.header.frame_id = self.base_frame
             odom.header.child_frame_id = "base_link"
             odom.pose.pose.position = msg
             odom.pose.pose.orientation = quaternion_from_euler(yaw_rad, pitch_rad, roll_rad)

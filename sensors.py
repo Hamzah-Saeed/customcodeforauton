@@ -138,6 +138,7 @@ class SensorPub(Node):
             odom.header.child_frame_id = "base_link"
             odom.pose.pose.position = msg
             odom.pose.pose.orientation = quaternion_from_euler(yaw_rad, pitch_rad, roll_rad)
+            self.odom_publisher.publish(odom)
 
         else:
             self.get_logger().error("Failed to read GPS data")

@@ -1,3 +1,6 @@
+# Based on OSRF's robot_localization examples, with slight modifications to remove the global cost map parameters and only use a local cost map
+# Original: https://github.com/ros-navigation/navigation2_tutorials/blob/rolling/nav2_gps_waypoint_follower_demo/config/nav2_no_map_params.yaml
+
 bt_navigator:
   ros__parameters:
     global_frame: odom  # Changed from map to odom since we arent using a global cost map

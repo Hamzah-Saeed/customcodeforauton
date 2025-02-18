@@ -137,7 +137,7 @@ class SensorPub(Node):
             odom.header.frame_id = "odom"
             odom.header.child_frame_id = "base_link"
             odom.pose.pose.position = msg
-            odom.pose.pose.orientation = quaternion_from_euler(yaw_rad, pitch_rad, roll_rad)
+            odom.pose.pose.orientation = Quaternion(*quaternion_from_euler(roll_rad, pitch_rad, yaw_rad))
             self.odom_publisher.publish(odom)
 
         else:

@@ -62,7 +62,7 @@ ekf_filter_node_map:
 
     map_frame: map
     odom_frame: odom
-    base_link_frame: base_footprint # same case as before
+    base_link_frame: base_link # same case as before
     world_frame: map
 
     odom0: odom

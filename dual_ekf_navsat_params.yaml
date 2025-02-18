@@ -3,14 +3,14 @@
 ekf_filter_node_odom:
   ros__parameters:
     frequency: 30.0
-    two_d_mode: true # Recommended to use 2d mode for nav2 in mostly planar environments
+    two_d_mode: true # Recommended to use 2d mode for nav2 in mostly planar environments, for the case of the rover (on uneven terrains) likely better to set this as false
     print_diagnostics: true
     debug: false
     publish_tf: true
 
     map_frame: map
     odom_frame: odom
-    base_link_frame: base_footprint # the frame id used by the turtlebot's diff drive plugin
+    base_link_frame: base_footprint # the frame id used by the turtlebot's diff drive plugin, this should be changed to the rovers base_link_frame. Probably defined in the URDF file.
     world_frame: odom
 
     odom0: odom
@@ -29,7 +29,7 @@ ekf_filter_node_odom:
                   false, false, false,
                   false,  false,  false,
                   false,  false,  false]
-    imu0_differential: false  # If using a real robot you might want to set this to true, since usually absolute measurements from real imu's are not very accurate
+    imu0_differential: false  # Since we're using a robat, bnetter to set this to true since there is error in our measurements
     imu0_relative: false
     imu0_queue_size: 10
     imu0_remove_gravitational_acceleration: true
@@ -55,14 +55,14 @@ ekf_filter_node_odom:
 ekf_filter_node_map:
   ros__parameters:
     frequency: 30.0
-    two_d_mode: true  # Recommended to use 2d mode for nav2 in mostly planar environments
+    two_d_mode: true  #Same case as before
     print_diagnostics: true
     debug: false
     publish_tf: true
 
     map_frame: map
     odom_frame: odom
-    base_link_frame: base_footprint # the frame id used by the turtlebot's diff drive plugin
+    base_link_frame: base_footprint # same case as before
     world_frame: map
 
     odom0: odom
@@ -91,7 +91,7 @@ ekf_filter_node_map:
                   false, false, false,
                   false,  false,  false,
                   false,  false,  false]
-    imu0_differential: false  # If using a real robot you might want to set this to true, since usually absolute measurements from real imu's are not very accurate
+    imu0_differential: false  #Same case as before
     imu0_relative: false
     imu0_queue_size: 10
     imu0_remove_gravitational_acceleration: true

@@ -104,7 +104,7 @@ class SensorPub(Node):
             #create NavSatFix Message#
             nsm = NavSatFix()
             nsm.header.stamp = self.get_clock().now().to_msg()
-            nsm.header.frame_id = "gps_frame" #arbitrary id, can be changed
+            nsm.header.frame_id = self.base_frame 
             nsm.latitude = float(lat)
             nsm.longitude = float(lon)
             nsm.altitude = float(alt)

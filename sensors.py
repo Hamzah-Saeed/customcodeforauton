@@ -134,7 +134,7 @@ class SensorPub(Node):
 
             odom = Odometry()
             odom.header.stamp = self.get_clock().now().to_msg()
-            odom.header.frame_id = odom
+            odom.header.frame_id = "odom"
             odom.header.child_frame_id = "base_link"
             odom.pose.pose.position = msg
             odom.pose.pose.orientation = quaternion_from_euler(yaw_rad, pitch_rad, roll_rad)

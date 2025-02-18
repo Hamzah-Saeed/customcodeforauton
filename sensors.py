@@ -6,7 +6,9 @@ from rclpy.timer import Timer
 from rclpy.executors import MultiThreadedExecutor
 from geometry_msgs.msg import Point
 from sensor_msgs.msg import NavSatFix, Imu
+from nav_msgs.msg import Odometry
 from std_msgs.msg import Int64
+from tf.transformations import quaternion_from_euler
 
 import utils.pyum982 as pyum982
 from vnpy import *
@@ -60,6 +62,12 @@ class SensorPub(Node):
             10 #queue size 
         )
 
+        self.odom_publisher = self.create_publisher(
+            Odometry,
+            'odom',
+            10)
+
+
         timer_period  = 0.010
         self.create_timer(timer_period, self.timer_callback)
         
@@ -104,7 +112,7 @@ class SensorPub(Node):
             #create NavSatFix Message#
             nsm = NavSatFix()
             nsm.header.stamp = self.get_clock().now().to_msg()
-            nsm.header.frame_id = self.base_frame 
+            nsm.header.frame_id = "gps_frame" #arbitrary id, can be changed
             nsm.latitude = float(lat)
             nsm.longitude = float(lon)
             nsm.altitude = float(alt)
@@ -121,9 +129,16 @@ class SensorPub(Node):
             msg.x = float(lat)
             msg.y = float(lon)
             msg.z = float(yaw)
-        
             self.publisher.publish(msg)
             print(msg)
+
+            odom = Odometry()
+            odom.header.stamp = self.get_clock().now().to_msg()
+            odom.header.frame_id = "odom_frame"
+            odom.header.child_frame_id = "base_link"
+            odom.pose.pose.position = msg
+            odom.pose.pose.orientation = quaternion_from_euler(yaw_rad, pitch_rad, roll_rad)
+
         else:
             self.get_logger().error("Failed to read GPS data")
 

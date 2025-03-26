@@ -18,19 +18,34 @@ class GpsWaypointCommander(Node):
 
     def waitUntilNav2Active(self, navigator='bt_navigator', localizer='robot_localization'):
         """Block until the full navigation system is up and running."""
+        
+        # Wait for the localization service to be available
         if localizer != 'robot_localization':  # non-lifecycle node
-            self._waitForNodeToActivate(localizer)
+            self._waitForServiceToActivate(localizer)
+        
+        # If using AMCL, wait for the initial pose
         if localizer == 'amcl':
             self._waitForInitialPose()
-        self._waitForNodeToActivate(navigator)
+        
+        # Wait for the navigation action server to be available
+        self._waitForServiceToActivate(navigator)
+        
         self.get_logger().info('Nav2 is ready for use!')
         return
 
-    def _waitForNodeToActivate(self, node_name):
-        """Wait for a node to activate."""
-        while not self.node_is_ready(node_name):
+    def _waitForServiceToActivate(self, node_name):
+        """Wait for a service to activate."""
+        while not self.service_is_ready(node_name):
             self.get_logger().info(f'Waiting for {node_name} to activate...')
             rclpy.sleep(1.0)  # Sleep 1 second before retrying
+
+    def service_is_ready(self, service_name):
+        """Check if the service is available."""
+        try:
+            # If service is available, return True
+            return self.count_non_diagnostic_services(service_name) > 0
+        except Exception as e:
+            return False
 
     def _waitForInitialPose(self):
         """Wait until the robot's initial pose is received."""
